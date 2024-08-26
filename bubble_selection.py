@@ -10,7 +10,7 @@ def insertion_sort(marks):
         marks[j + 1] = key
         print(f"Step {i}: {marks}")
     print("Marks after Insertion Sort:", marks)
-
+                                                                  
 def shell_sort(marks):
     print("Performing Shell Sort...")
     n = len(marks)

@@ -3,160 +3,152 @@
 
 using namespace std;
 
-struct Node {
-    string name;
-    long prn;
-    Node* next;
+struct MemberNode {
+    string memberName;
+    long memberPRN;
+    MemberNode* nextMember;
 
-    Node() : prn(0), next(nullptr) {}
+    MemberNode() : memberPRN(0), nextMember(nullptr) {}
 };
 
-class List {
+class MemberList {
 private:
-    Node* head;
-    Node* tail;
-    int count;
+    MemberNode* headNode;
+    MemberNode* tailNode;
+    int memberCount;
 
 public:
-    List() : head(nullptr), tail(nullptr), count(0) {}
+    MemberList() : headNode(nullptr), tailNode(nullptr), memberCount(0) {}
 
-    void addMember() {
-        int n;
-        cout << "How many members to add? ";
-        cin >> n;
+    void addNewMember() {
+        int numMembers;
+        cout << "Enter number of members to add: ";
+        cin >> numMembers;
 
-        for (int i = 0; i < n; i++) {
-            Node* newNode = new Node;
-            cout << "Enter Member name: ";
-            cin >> newNode->name;
+        for (int i = 0; i < numMembers; i++) {
+            MemberNode* newMember = new MemberNode;
+            cout << "Enter Member Name: ";
+            cin >> newMember->memberName;
             cout << "Enter PRN of Member: ";
-            cin >> newNode->prn;
+            cin >> newMember->memberPRN;
 
-            if (!head || newNode->prn < head->prn) {
-                newNode->next = head;
-                head = newNode;
-                if (!tail) tail = newNode; // Update tail if list is empty
-            } else if (!tail || newNode->prn > tail->prn) {
-                tail->next = newNode;
-                tail = newNode;
+            if (!headNode || newMember->memberPRN < headNode->memberPRN) {
+                newMember->nextMember = headNode;
+                headNode = newMember;
+                if (!tailNode) tailNode = newMember; // Update tail if list is empty
+            } else if (!tailNode || newMember->memberPRN > tailNode->memberPRN) {
+                tailNode->nextMember = newMember;
+                tailNode = newMember;
             } else {
-                Node* current = head;
-                while (current->next && current->next->prn < newNode->prn) {
-                    current = current->next;
+                MemberNode* currentNode = headNode;
+                while (currentNode->nextMember && currentNode->nextMember->memberPRN < newMember->memberPRN) {
+                    currentNode = currentNode->nextMember;
                 }
-                newNode->next = current->next;
-                current->next = newNode;
-                if (!newNode->next) tail = newNode; // Update tail if new node is last
+                newMember->nextMember = currentNode->nextMember;
+                currentNode->nextMember = newMember;
+                if (!newMember->nextMember) tailNode = newMember; // Update tail if new member is last
             }
-            count++;
+            memberCount++;
         }
     }
 
-    void remove() {
-        if (!head) {
-            cout << "Error, Underflow!" << endl;
+    void removeMember() {
+        if (!headNode) {
+            cout << "Error: List is empty!" << endl;
             return;
         }
 
-        long prn;
+        long prnToRemove;
         cout << "Enter PRN of member to remove: ";
-        cin >> prn;
+        cin >> prnToRemove;
 
-        if (head->prn == prn) {
-            Node* temp = head;
-            head = head->next;
-            if (!head) tail = nullptr; // Update tail if list becomes empty
-            delete temp;
+        if (headNode->memberPRN == prnToRemove) {
+            MemberNode* tempNode = headNode;
+            headNode = headNode->nextMember;
+            if (!headNode) tailNode = nullptr; // Update tail if list becomes empty
+            delete tempNode;
         } else {
-            Node* current = head;
-            while (current->next && current->next->prn != prn) {
-                current = current->next;
+            MemberNode* currentNode = headNode;
+            while (currentNode->nextMember && currentNode->nextMember->memberPRN != prnToRemove) {
+                currentNode = currentNode->nextMember;
             }
-            if (current->next) {
-                Node* temp = current->next;
-                current->next = current->next->next;
-                if (!current->next) tail = current; // Update tail if removed node was last
-                delete temp;
+            if (currentNode->nextMember) {
+                MemberNode* tempNode = currentNode->nextMember;
+                currentNode->nextMember = currentNode->nextMember->nextMember;
+                if (!currentNode->nextMember) tailNode = currentNode; // Update tail if removed node was last
+                delete tempNode;
             } else {
                 cout << "Member not found!" << endl;
             }
         }
-        count--;
+        memberCount--;
     }
 
-    void displayList() {
-        Node* current = head;
-        while (current) {
-            cout << "Name: " << current->name << ", PRN: " << current->prn << endl;
-            current = current->next;
+    void showList() {
+        MemberNode* currentNode = headNode;
+        while (currentNode) {
+            cout << "Name: " << currentNode->memberName << ", PRN: " << currentNode->memberPRN << endl;
+            currentNode = currentNode->nextMember;
         }
     }
 
-    void displayReverse(Node* node) {
+    void reverseDisplay(MemberNode* node) {
         if (!node) return;
-        displayReverse(node->next);
-        cout << "Name: " << node->name << ", PRN: " << node->prn << endl;
+        reverseDisplay(node->nextMember);
+        cout << "Name: " << node->memberName << ", PRN: " << node->memberPRN << endl;
     }
 
-    void displayReverse() {
-        if (!head) {
-            cout << "List is empty!" << endl;
+    void showReverse() {
+        if (!headNode) {
+            cout << "The list is empty!" << endl;
             return;
         }
-        displayReverse(head);
+        reverseDisplay(headNode);
     }
 
-    void concatenate(List& other) {
-        if (!other.head) return; // If the other list is empty, do nothing
+    void mergeLists(MemberList& otherList) {
+        if (!otherList.headNode) return; // If the other list is empty
 
-        if (!head) { // If the current list is empty
-            head = other.head;
-            tail = other.tail;
+        if (!headNode) { // If the current list is empty
+            headNode = otherList.headNode;
+            tailNode = otherList.tailNode;
         } else {
-            tail->next = other.head; // Link the end of current list to the start of the other
-            tail = other.tail; // Update the tail to the tail of the other list
+            tailNode->nextMember = otherList.headNode; // Link the end of current list to the start of the other
+            tailNode = otherList.tailNode; // Update the tail to the tail of the other list
         }
-        count += other.count; // Update the count
-        other.head = nullptr; // Clear the other list
-        other.tail = nullptr;
-        other.count = 0; // Reset the count of the other list
+        memberCount += otherList.memberCount; // Update the count
+        otherList.headNode = nullptr; // Clear the other list
+        otherList.tailNode = nullptr;
+        otherList.memberCount = 0; // Reset the count of the other list
     }
 
-    ~List() {
-        while (head) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
+    ~MemberList() {
+        while (headNode) {
+            MemberNode* tempNode = headNode;
+            headNode = headNode->nextMember;
+            delete tempNode;
         }
     }
 };
 
 int main() {
-    List list1, list2;
-    int choice;
+    MemberList listA, listB;
+    int userChoice;
     do {
-        cout << "1. Add Member to List 1\n2. Remove Member from List 1\n3. Display List 1\n4. Display Reverse of List 1\n5. Add Member to List 2\n6. Concatenate List 2 to List 1\n7. Display List 1\n8. Exit\n";
-        cin >> choice;
+        cout << "1. Add Member to List A\n2. Remove Member from List A\n3. Display List A\n4. Display Reverse of List A\n5. Add Member to List B\n6. Merge List B into List A\n7. Display List A\n8. Exit\n";
+        cin >> userChoice;
 
-        // Input validation
-        while (cin.fail() || choice < 1 || choice > 8) {
-            cout << "Invalid input. Please enter a number between 1 and 8: ";
-            cin.clear(); // Clear the error flag
-            cin.ignore(10000, '\n'); // Discard invalid input
-            cin >> choice;
-        }
-
-        switch (choice) {
-            case 1: list1.addMember(); break;
-            case 2: list1.remove(); break;
-            case 3: list1.displayList(); break;
-            case 4: list1.displayReverse(); break;
-            case 5: list2.addMember(); break;
-            case 6: list1.concatenate(list2); break;
-            case 7: list1.displayList(); break;
+        switch (userChoice) {
+            case 1: listA.addNewMember(); break;
+            case 2: listA.removeMember(); break;
+            case 3: listA.showList(); break;
+            case 4: listA.showReverse(); break;
+            case 5: listB.addNewMember(); break;
+            case 6: listA.mergeLists(listB); break;
+            case 7: listA.showList(); break;
             case 8: break;
         }
-    } while (choice != 8);
+    } while (userChoice != 8);
 
     return 0;
 }
